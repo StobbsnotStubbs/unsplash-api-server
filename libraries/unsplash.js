@@ -4,7 +4,23 @@ const axios = require("axios"); // npm i axios
 const superagent = require("superagent"); // npm i superagent
 
 
-// http://localhost:3000/searchImage?title=cat
+
+// http://localhost:3000/randomImage
+async function randomImageHandler(request, response) {
+  
+  const url = `https://api.unsplash.com/photos/random?client_id=${process.env.UNSPLASH_API_KEY}`;
+  try {
+    let imgData = await superagent.get(url);
+    console.log(imgData);
+    let randomImg = await new Photo(imgData.body)
+    response.status(200).send(randomImg);
+  } catch {
+    response.status(500).send("something went wrong");
+  }
+}
+
+
+// http://localhost:3000/searchImage?title=dog
 function searchImageHandler(request, response) {
   const title = request.query.title;
   const key = process.env.UNSPLASH_API_KEY;
@@ -21,20 +37,6 @@ function searchImageHandler(request, response) {
     });
 }
 
-
-// http://localhost:3000/randomImage
-async function randomImageHandler(request, response) {
-  
-  const url = `https://api.unsplash.com/photos/random?client_id=${process.env.UNSPLASH_API_KEY}`;
-  try {
-    let imgData = await superagent.get(url);
-    console.log(imgData);
-    let randomImg = await new Photo(imgData.body)
-    response.status(200).send(randomImg);
-  } catch {
-    response.status(500).send("something went wrong");
-  }
-}
 
 class Photo {
   constructor(data) {
